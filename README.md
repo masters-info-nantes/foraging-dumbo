@@ -1,8 +1,10 @@
 # Foraging Dumbo
 
-PageRank implementation on the Hadoop plateform.
+PageRank implementation on the Hadoop plateform and with Pig Latin.
 
-## Prerequisites
+## Hadoop
+
+### Prerequisites
 
 - correctly installed Hadoop
 - (optional) define a variable $HADOOP_ROOT containing path to hadoop installation :
@@ -14,17 +16,46 @@ export HADOOP_ROOT="/path/to/hadoop-2.7.1"
 export HADOOP_CLASSPATH=${JAVA_HOME}/lib/tools.jar
 ```
 
-## Compile and make jar
+### Compile and make jar
 
 ```
 $HADOOP_ROOT/bin/hadoop com.sun.tools.javac.Main App.java FDMapper.java FDReducer.java FDCrawler.java
 jar cf ForagingDumbo.jar App.class FDMapper.class FDReducer.class FDCrawler.class
 ```
 
-## Run the application
+### Run the crawler
 
 ```
-$HADOOP_ROOT/bin/hadoop jar ForagingDumbo.jar App <url> <max_depth>
+$HADOOP_ROOT/bin/hadoop jar ForagingDumbo.jar App crawl <url> <max_depth> <output file>
+```
+
+### Run the page rank operation
+
+```
+$HADOOP_ROOT/bin/hadoop jar ForagingDumbo.jar App rank <input path> <output path>
+```
+
+
+## Pig
+
+### Prerequisites
+
+- correctly installed Pig Latin
+- (optional) define a variable $PIG_ROOT containing path to pig installation :
+```
+export PIG_ROOT="/path/to/pig-0.15.0"
+```
+
+## Run script
+
+Run Grunt interpreter :
+```
+$PIG_ROOT/bin/pig -x local
+```
+
+Run the script :
+```
+run pagerank.pl
 ```
 
 ## Using examples 

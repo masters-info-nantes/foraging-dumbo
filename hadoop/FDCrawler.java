@@ -16,17 +16,17 @@ import java.util.LinkedList;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-//~ import javax.net.ssl.HttpsURLConnection;
-//~ import javax.net.ssl.SSLPeerUnverifiedException;
 
 public class FDCrawler {
 	
 	private String startUrl;
 	private int maxDepth;
+	private String outputPath;
 	
-	public FDCrawler(String startUrl, int maxDepth) {
+	public FDCrawler(String startUrl, int maxDepth, String outputPath) {
 		this.startUrl = startUrl;
 		this.maxDepth = maxDepth;
+		this.outputPath = outputPath;
 	}
 	
 	public File crawl() {
@@ -109,13 +109,19 @@ public class FDCrawler {
 		
 		Set<String> keySet = links.keySet();
 		try {
-			tmpFile = File.createTempFile("FDSiteGraph.",null);
+			tmpFile = new File(this.outputPath);
 			fileWriter = new FileWriter(tmpFile);
 			bufferedWriter = new BufferedWriter(fileWriter);
 			for(String url : keySet) {
-				bufferedWriter.write(url);
+				bufferedWriter.write(url+"\t1.0\t");
+				boolean first = true;
 				for(String link : links.get(url)) {
-					bufferedWriter.write(" "+link);
+					if(first) {
+						first = false;
+						bufferedWriter.write(link);
+					} else {
+						bufferedWriter.write(" "+link);
+					}
 				}
 				bufferedWriter.newLine();
 			}
