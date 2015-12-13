@@ -48,14 +48,8 @@ export PIG_ROOT="/path/to/pig-0.15.0"
 
 ## Run script
 
-Run Grunt interpreter :
 ```
-$PIG_ROOT/bin/pig -x local
-```
-
-Run the script :
-```
-run pagerank.pl
+$PIG_ROOT/bin/pig -x local -p INTPUT=<input path> -p OUTPUT=<output path> pagerank.pl
 ```
 
 ## Using examples 

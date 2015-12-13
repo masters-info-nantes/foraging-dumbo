@@ -1,4 +1,4 @@
-previousPageRank = LOAD 'crawl.txt' USING PigStorage('\\t')
+previousPageRank = LOAD '$INPUT' USING PigStorage('\\t')
 	AS (url:chararray, pagerank:float, links:chararray)
 ;
 previousPageRank = FOREACH previousPageRank
@@ -20,5 +20,5 @@ newPageRank = FOREACH ( COGROUP outlinks BY url, previousPageRank BY url INNER)
 		FLATTEN(previousPageRank.strLinks)
 ;
 STORE newPageRank
-	INTO 'pig.output'
+	INTO '$OUTPUT'
 	USING PigStorage('\t');
