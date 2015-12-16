@@ -49,7 +49,7 @@ export PIG_ROOT="/path/to/pig-0.15.0"
 ## Run script
 
 ```
-$PIG_ROOT/bin/pig -x local -p INTPUT=<input path> -p OUTPUT=<output path> pagerank.pl
+$PIG_ROOT/bin/pig -x local -p INPUT=<input path> -p OUTPUT=<output path> pagerank.pl
 ```
 
 ## Using examples 
@@ -60,6 +60,12 @@ python2 -m SimpleHTTPServer 8080
 ```
 
 Then, when running application, you can pass "http://localhost:8080" as url.
+
+## Results Given
+
+You can find into hadoop_res and pig_res the result of each iteration of the pageRank.
+
+Both start from crawl.stallman.txt, crawled with as starting url the Richard Stallman's personal page.
 
 ## Links
 

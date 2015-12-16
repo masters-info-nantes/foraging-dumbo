@@ -45,19 +45,6 @@ public class App {
 				System.out.println("unrecognize command");
 				System.exit(0);
 		}
-		
-		//~ try {
-			//~ URL url = new URL(args[0]);// just for check url validity
-			//~ int depth = Integer.parseInt(args[1]);
-			
-			//~ FDCrawler crawler = new FDCrawler(url.toString(),depth);
-			//~ File input = crawler.crawl();
-			//~ pageRank(input,"output");
-		//~ } catch(MalformedURLException ex) {
-			//~ System.err.println("first argument must be a valid url");
-		//~ } catch(NumberFormatException ex) {
-			//~ System.err.println("second argument must be a number");
-		//~ }
 	}
 	
 	public static void cmdCrawl(String[] args) throws Exception {
@@ -67,11 +54,6 @@ public class App {
 			
 			FDCrawler crawler = new FDCrawler(url.toString(),depth,args[3]);
 			File crawlOutput = crawler.crawl();
-			//~ if(crawlOutput.exists()) {
-				//~ File dest = new File(args[3]);
-				//~ crawlOutput.renameTo(dest);
-				//~ System.out.println(crawlOutput.toString()+" move "+dest.toString());
-			//~ }
 		} catch(MalformedURLException ex) {
 			System.err.println("first argument must be a valid url");
 		} catch(NumberFormatException ex) {
@@ -83,12 +65,10 @@ public class App {
 		String input = args[1];
 		String output = args[2];
 		
-		//~ pageRank(input,"output");
 		Configuration conf = new Configuration();
 		Job job = Job.getInstance(conf, "pageRank");
 		job.setJarByClass(App.class);
 		job.setMapperClass(FDMapper.class);
-		//~ job.setCombinerClass(FDReducer.class);
 		job.setReducerClass(FDReducer.class);
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(Text.class);
@@ -96,18 +76,5 @@ public class App {
 		FileOutputFormat.setOutputPath(job, new Path(output));
 		System.exit(job.waitForCompletion(true) ? 0 : 1);
 	}
-	
-	//~ public static void pageRank(File input, String output) throws Exception {
-		//~ Configuration conf = new Configuration();
-		//~ Job job = Job.getInstance(conf, "pageRank");
-		//~ job.setJarByClass(App.class);
-		//~ job.setMapperClass(FDMapper.class);
-		//~ job.setCombinerClass(FDReducer.class);
-		//~ job.setReducerClass(FDReducer.class);
-		//~ job.setOutputKeyClass(Text.class);
-		//~ job.setOutputValueClass(Text.class);
-		//~ FileInputFormat.addInputPath(job, new Path(input.toString()));
-		//~ FileOutputFormat.setOutputPath(job, new Path(output));
-		//~ System.exit(job.waitForCompletion(true) ? 0 : 1);
-	//~ }
+
 }

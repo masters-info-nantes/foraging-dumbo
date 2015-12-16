@@ -1,3 +1,10 @@
 *.class
 *.jar
 output/*
+hadoop_res/*/_SUCCESS
+hadoop_res/*/._SUCCESS.crc
+hadoop_res/*/.part-r-00000.crc
+pig_*.log
+pig_res/*/_SUCCESS
+pig_res/*/._SUCCESS.crc
+pig_res/*/.part-r-00000.crc

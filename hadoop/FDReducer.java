@@ -12,7 +12,7 @@ public class FDReducer extends Reducer<Text,Text,Text,Text> {
 		double sumShareOtherPageRanks = 0.0d;
 		String str = "";
 		
-		String pageLinks = "";
+		String pageLinks = null;
 		
 		for(Text linkRank : values) {
 			String[] arrayLinkRank = linkRank.toString().split("\t");
@@ -21,7 +21,7 @@ public class FDReducer extends Reducer<Text,Text,Text,Text> {
 				pageLinks = linkRank.toString().substring(2);
 				continue;
 			}
-
+			
 			String linkUrl = arrayLinkRank[0];
 			double linkPageRank = Double.valueOf(arrayLinkRank[1]);
 			int linkNumberOfOutLink = Integer.valueOf(arrayLinkRank[2]);
@@ -30,8 +30,9 @@ public class FDReducer extends Reducer<Text,Text,Text,Text> {
 		}
 		
 		double newRank = damping * sumShareOtherPageRanks + (1-damping);
-		
-		context.write(key,new Text(newRank+"\t"+pageLinks));
+		if(pageLinks != null) {
+			context.write(key,new Text(newRank+"\t"+pageLinks));
+		}
 	}
 	
 }

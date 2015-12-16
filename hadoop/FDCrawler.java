@@ -37,46 +37,76 @@ public class FDCrawler {
 		waiting.add(this.startUrl);
 		waiting.add(null);
 		
+		File tmpFile = null;
+		Writer fileWriter = null;
+		BufferedWriter bufferedWriter = null;
+		
 		Pattern pattern = Pattern.compile("<a href=\"\\S+\">");
 		int currentDepth = 0;
 		boolean levelEnd = false;
-		while(!waiting.isEmpty() && currentDepth < this.maxDepth) {
-			String currentUrl = waiting.removeFirst();
-			if(links.get(currentUrl) != null) {
-				continue;
-			}
+		try {
+			tmpFile = new File(this.outputPath);
+			fileWriter = new FileWriter(tmpFile);
+			bufferedWriter = new BufferedWriter(fileWriter);
 			
-			if(currentUrl == null) {// new depth
-				if(levelEnd) {
-					// nothing in the last level, so nothing in all nexts
-					break;
+			while(!waiting.isEmpty() && currentDepth < this.maxDepth) {
+				String currentUrl = waiting.removeFirst();
+				if(links.get(currentUrl) != null) {
+					continue;
 				}
-				currentDepth++;
-				waiting.addLast(null);// indicate start of a new depth level
-				levelEnd = true;
-			} else {
-				levelEnd = false;
-				String requestContent = readPage(currentUrl);
-				Matcher matcher = pattern.matcher(requestContent);
-				if(links.get(currentUrl) == null) {
-					links.put(currentUrl,new HashSet<String>());
-				}
-				while (matcher.find()) {
-					String newUrlWithBalise = matcher.group();
-					System.out.println(" found "+newUrlWithBalise);
-					int hrefIndex = newUrlWithBalise.indexOf("href=\"");
-					int endHrefIndex = newUrlWithBalise.indexOf("\"",hrefIndex+6);
-					String newUrl = newUrlWithBalise.substring(hrefIndex+6,endHrefIndex);
-					if(newUrl.startsWith("http://") || newUrl.startsWith("https://")) {// do not take relative url
-						links.get(currentUrl).add(newUrl);
-						if(!links.containsKey(newUrl)) {
-							waiting.addLast(newUrl);
+				
+				if(currentUrl == null) {// new depth
+					if(levelEnd) {
+						// nothing in the last level, so nothing in all nexts
+						break;
+					}
+					currentDepth++;
+					waiting.addLast(null);// indicate start of a new depth level
+					levelEnd = true;
+				} else {
+					levelEnd = false;
+					String requestContent = readPage(currentUrl);
+					Matcher matcher = pattern.matcher(requestContent);
+					if(links.get(currentUrl) == null) {
+						links.put(currentUrl,new HashSet<String>());
+						bufferedWriter.write(currentUrl+"\t1.0\t");
+					}
+					boolean first = true;
+					while (matcher.find()) {
+						String newUrlWithBalise = matcher.group();
+						System.out.println(" found "+newUrlWithBalise);
+						int hrefIndex = newUrlWithBalise.indexOf("href=\"");
+						int endHrefIndex = newUrlWithBalise.indexOf("\"",hrefIndex+6);
+						String newUrl = newUrlWithBalise.substring(hrefIndex+6,endHrefIndex);
+						if(newUrl.startsWith("http://") || newUrl.startsWith("https://")) {// do not take relative url
+							links.get(currentUrl).add(newUrl);
+							if(first) {
+								first = false;
+								bufferedWriter.write(newUrl);
+							} else {
+								bufferedWriter.write(" "+newUrl);
+							}
+							if(!links.containsKey(newUrl)) {
+								waiting.addLast(newUrl);
+							}
 						}
 					}
+					bufferedWriter.write("\n");
+				}
+			}
+		} catch(IOException ex) {
+			ex.printStackTrace();
+		} finally {
+			if (bufferedWriter != null && fileWriter != null) {
+				try {
+					bufferedWriter.close();
+					fileWriter.close();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
 			}
 		}
-		return writeInFile(links);
+		return tmpFile;
 	}
 	
 	private String readPage(String pageUrl) {
@@ -100,43 +130,5 @@ public class FDCrawler {
 			ex.printStackTrace();
 			return "";
 		}
-	}
-	
-	private File writeInFile(HashMap<String, Set<String>> links) {
-		File tmpFile = null;
-		Writer fileWriter = null;
-		BufferedWriter bufferedWriter = null;
-		
-		Set<String> keySet = links.keySet();
-		try {
-			tmpFile = new File(this.outputPath);
-			fileWriter = new FileWriter(tmpFile);
-			bufferedWriter = new BufferedWriter(fileWriter);
-			for(String url : keySet) {
-				bufferedWriter.write(url+"\t1.0\t");
-				boolean first = true;
-				for(String link : links.get(url)) {
-					if(first) {
-						first = false;
-						bufferedWriter.write(link);
-					} else {
-						bufferedWriter.write(" "+link);
-					}
-				}
-				bufferedWriter.newLine();
-			}
-		} catch(IOException ex) {
-			ex.printStackTrace();
-		} finally {
-			if (bufferedWriter != null && fileWriter != null) {
-				try {
-					bufferedWriter.close();
-					fileWriter.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		return tmpFile;
 	}
 }
